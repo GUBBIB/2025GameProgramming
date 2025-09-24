@@ -3,8 +3,8 @@
 double sum(int count, ...);
 int main(void)
 {
-printf("ÇÕ°è = %lf\n", sum(2, 10.5, 20.23));
-printf("ÇÕ°è = %lf\n", sum(5, 10.3, 245.67, 0.51, 198345.764));
+printf("ï¿½Õ°ï¿½ = %lf\n", sum(2, 10.5, 20.23));
+printf("ï¿½Õ°ï¿½ = %lf\n", sum(5, 10.3, 245.67, 0.51, 198345.764));
 return 0;
 }
 double sum(int count, ...)
@@ -15,7 +15,7 @@ va_list ap;
 va_start(ap, count);
 while(i<count)
 {
-number=va_arg(ap, double); //ÀÎ¼öÀÇ µ¥ÀÌÅÍ ÇüÀº double
+number=va_arg(ap, double); //ï¿½Î¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ double
 total+=number;
 i++;
 }

@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<windows.h>
+#include<math.h>
 void print_frequency(int octave);
 int calc_frequency(int octave, int inx);
 
@@ -28,11 +29,12 @@ int main(void) {
 					4, 4, 3, 3, 2, 2, 1, 4, 4, 3, 3, 2, 2, 1,
 					0, 0, 4, 4, 5, 5, 4, 3, 3, 2, 2, 1, 1, 0};
 
-	
-	
+	int size = sizeof(song) / sizeof(song[0]);
 
-	for(i=0; )
-	
+	for (i = 0; i < size; i++) {
+        printf("%d ", song[i]);
+    }
+    printf("\n");
 
     return 0;
 }
