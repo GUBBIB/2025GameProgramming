@@ -1,5 +1,30 @@
 #pragma once
+#define NOMINMAX
+#include "console.hpp"      
+#include <windows.h>
+#include <gdiplus.h>
+#include <vector>
 #include <string>
+#include <conio.h>
+#include <algorithm>
+#include <chrono>
+#include <thread>
+#include <iostream>
+
+using namespace std;
+using namespace Gdiplus;
+using namespace Console;
+
+// RGB 색 구조체
+struct RGB { BYTE r, g, b; };
+// 아스키 아트 프레임 구조체
+struct AsciiFrame {
+    vector<wstring> lines;  // 한 프레임의 콘솔 라인들
+    int delay_ms = 33;      // 프레임 딜레이
+
+    vector<vector<RGB>> colors; // lines와 동일 shape, [row][col] 색
+
+};
 
 // 콘솔에서 GIF를 아스키 아트로 재생
 // - gifPath : 재생할 GIF 경로
@@ -17,10 +42,10 @@ bool play_gif_ascii(const std::wstring& gifPath,
     int midGap = 2,
     int botMargin = 1);
 
-// 재생을 사용자 입력으로 끊고 싶으면 이 함수를 주기적으로 체크
+// 비디오 다시 재생/일시 중지
 bool ascii_player_should_stop();
 void ascii_player_request_stop();
-
+// 비디오 재생
 void play_ascii_video(const std::wstring& gifPath,
     const std::wstring& header,
     const std::wstring& footer,
@@ -29,3 +54,12 @@ void play_ascii_video(const std::wstring& gifPath,
     int topMargin = 1,
     int midGap = 2,
     int botMargin = 1);
+
+// 내부 구현용
+wchar_t pix2ch(unsigned char y);
+// VT 모드 활성화
+void enableVtColors();
+// 콘솔 문자 크기에 맞춰 목표 크기 계산
+void calcTargetSize(int srcW, int srcH, int maxCols, int maxRows, int& outCols, int& outRows);
+// GIF 파일을 아스키 프레임 벡터로 변환
+bool loadGifToAsciiFrames(const std::wstring& path, int targetCols, int maxRows, vector<AsciiFrame>& out);   

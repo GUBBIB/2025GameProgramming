@@ -1,5 +1,10 @@
 #pragma once
+#include <windows.h>
+#include <mmsystem.h>
 #include <string>
+#include <sstream>
+#include <cstdio>
+#include <iostream>
 
 namespace Bgm {
 

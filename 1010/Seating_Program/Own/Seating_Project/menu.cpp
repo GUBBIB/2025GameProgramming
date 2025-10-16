@@ -1,10 +1,5 @@
 // menu.cpp
 #include "menu.hpp"
-#include "console.hpp"
-#include "seating.hpp"
-#include <iostream>
-#include <conio.h>
-#include "ascii_player.hpp"
 
 using namespace std;
 using namespace Console;
