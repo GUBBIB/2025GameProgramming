@@ -1,15 +1,4 @@
-﻿#define NOMINMAX
-#include "ascii_player.hpp"
-#include "console.hpp"      // 네가 쓰는 Console 유틸 (gotoxy, wprintCentered 등)
-#include <windows.h>
-#include <gdiplus.h>
-#include <vector>
-#include <string>
-#include <conio.h>
-#include <algorithm>
-#include <chrono>
-#include <thread>
-#include <iostream>
+﻿#include "ascii_player.hpp" 
 
 #pragma comment(lib, "gdiplus.lib")
 
@@ -17,30 +6,21 @@ using namespace std;
 using namespace Gdiplus;
 using namespace Console;
 
-struct RGB { BYTE r, g, b; };
 
+
+// 밝기→문자 매핑(어두움→밝음)
+const wchar_t* LUT = L" ░▒▓█";
 static volatile bool g_stop = false;
 bool ascii_player_should_stop() { return g_stop; }
 void ascii_player_request_stop() { g_stop = true; }
 
-// 밝기→문자 매핑(어두움→밝음)
-static const wchar_t* LUT = L" ░▒▓█"; // 길이 10
-
-struct AsciiFrame {
-    vector<wstring> lines;  // 한 프레임의 콘솔 라인들
-    int delay_ms = 33;      // 프레임 딜레이
-
-    vector<vector<RGB>> colors; // lines와 동일 shape, [row][col] 색
-
-};
-
 // 픽셀(0~255)→문자
-static wchar_t pix2ch(unsigned char y) {
+wchar_t pix2ch(unsigned char y) {
     size_t idx = (size_t)((y / 255.0) * (wcslen(LUT) - 1));
     return LUT[idx];
 }
 
-static void enableVtColors() {
+void enableVtColors() {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD mode = 0;
     if (GetConsoleMode(hOut, &mode)) {
@@ -51,7 +31,7 @@ static void enableVtColors() {
 
 // 콘솔 셀 가로:세로 비율 보정(폰트에 따라 다르지만 대충 문자 높이가 더 큼)
 // 문자 한 칸이 가로 1, 세로 2 정도라고 보고 원본 높이를 0.5배로 맞춤.
-static void calcTargetSize(int srcW, int srcH, int maxCols, int maxRows,
+void calcTargetSize(int srcW, int srcH, int maxCols, int maxRows,
     int& outCols, int& outRows)
 {
     if (srcW <= 0 || srcH <= 0) { outCols = outRows = 0; return; }
@@ -74,7 +54,7 @@ static void calcTargetSize(int srcW, int srcH, int maxCols, int maxRows,
     outRows = bestR;
 }
 
-static bool loadGifToAsciiFrames(const std::wstring& path,
+bool loadGifToAsciiFrames(const std::wstring& path,
     int targetCols, int maxRows,
     vector<AsciiFrame>& out)
 {

@@ -1,12 +1,6 @@
 // bgm.cpp 수정 포인트들만 모았습니다.
 #include "bgm.hpp"
 #define NOMINMAX
-#include <windows.h>
-#include <mmsystem.h>
-#include <string>
-#include <sstream>
-#include <cstdio>
-#include <iostream>
 #pragma comment(lib, "winmm.lib")
 
 namespace {

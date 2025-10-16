@@ -1,22 +1,12 @@
-#define NOMINMAX
 #include "seating.hpp"
-#include "console.hpp"
-#include <windows.h>
-#include <conio.h>
-#include <random>
-#include <iomanip>
-#include <iostream>
-#include <fstream>   
-#include <string>
-#include <ctime>     
+
 using namespace std;
 using namespace Console;
 
-enum class SeatAction { None, Reroll, Export, ChangeDir, Back };
 static std::wstring g_exportDir = L".";
 
-static SeatAction showBottomMenu(int left, int top) {
-    const wchar_t* items[] = {    
+SeatAction showBottomMenu(int left, int top) {
+    const wchar_t* items[] = {
         L"[1] 다시 배치 (고정 제외)",
         L"[2] 내보내기 TXT",
         L"[3] 내보내기 위치 수정",
@@ -58,7 +48,7 @@ static SeatAction showBottomMenu(int left, int top) {
         if (ch == '3') return SeatAction::ChangeDir;
 
         if (ch == '\r' || ch == ' ') {
-            if      (sel == 0) return SeatAction::Reroll;
+            if (sel == 0) return SeatAction::Reroll;
             else if (sel == 1) return SeatAction::Export;
             else if (sel == 2) return SeatAction::ChangeDir;
             else               return SeatAction::Back;
@@ -67,7 +57,7 @@ static SeatAction showBottomMenu(int left, int top) {
 }
 
 // 메뉴가 차지하는 라인 블록 지우기
-static void clearBottomBlock(int lines = 4) {
+void clearBottomBlock(int lines) {
     int cols, rows; getConsoleSize(cols, rows);
     int baseY = rows - lines;                 // 메뉴 시작 y
     for (int i = 0; i < lines; ++i)
@@ -95,7 +85,7 @@ static bool ensureDirectory(const wstring& dir) {
     return true;
 }
 
-static bool promptExportDir(std::wstring& exportDir) {
+bool promptExportDir(std::wstring& exportDir) {
     int cols, rows; getConsoleSize(cols, rows);
     int baseY = rows - 4;   // 하단 4줄 사용
     int left = 3;
@@ -143,14 +133,13 @@ static bool promptExportDir(std::wstring& exportDir) {
 }
 
 // 경로 결합 (간단히)
-static wstring joinPath(const wstring& dir, const wstring& file) {
+wstring joinPath(const wstring& dir, const wstring& file) {
     if (dir.empty()) return file;
     if (dir.back() == L'\\' || dir.back() == L'/') return dir + file;
     return dir + L"\\" + file;
 }
 
-static void rerollSeats(vector<int>& seats,
-    const vector<char>& locked)  // locked[i] == 1 이면 고정
+void rerollSeats(vector<int>& seats, const vector<char>& locked)  // locked[i] == 1 이면 고정
 {
     vector<int> idx;   idx.reserve(seats.size());
     vector<int> vals;  vals.reserve(seats.size());
@@ -170,7 +159,7 @@ static void rerollSeats(vector<int>& seats,
 }
 
 // UTF-16 → UTF-8
-static string w2u8(const wstring& ws) {
+string w2u8(const wstring& ws) {
     if (ws.empty()) return {};
     int len = WideCharToMultiByte(CP_UTF8, 0,
         ws.c_str(), (int)ws.size(),
@@ -182,7 +171,7 @@ static string w2u8(const wstring& ws) {
     return out;
 }
 // 내보내기
-static bool exportSeatsTxt_UTF8(const vector<int>& seats,
+bool exportSeatsTxt_UTF8(const vector<int>& seats,
     int rows, int cols,
     const wstring& path)
 {
@@ -209,7 +198,7 @@ static bool exportSeatsTxt_UTF8(const vector<int>& seats,
 }
 
 // 그리드 좌측(행) / 하단(열) 좌표 라벨 출력
-static void drawAxesLabels(const Grid& g, int rows, int cols, int step = 1)
+void drawAxesLabels(const Grid& g, int rows, int cols, int step)
 {
     int lx = g.originX - 4;
     if (lx < 1) lx = 1;
@@ -231,7 +220,7 @@ static void drawAxesLabels(const Grid& g, int rows, int cols, int step = 1)
     wcout.flush();
 }
 
-static bool readLineWithEsc(std::wstring& out, int x, int y) {
+bool readLineWithEsc(std::wstring& out, int x, int y) {
     out.clear();
     gotoxy(x, y);
 
@@ -358,11 +347,11 @@ void draw_check01() {
         ++y;
         return v;
         };
-    
+
 
     int row = askInt(L"행의 수를 입력하고 Enter> ");
     int col = askInt(L"열의 수를 입력하고 Enter> ");
-    int people = askInt_People(L"배치 인원수를 입력하고 Enter> ", row*col);
+    int people = askInt_People(L"배치 인원수를 입력하고 Enter> ", row * col);
     gotoxy(xPrompt, y);
     wcout << L"[←→↑↓] 이동  [Space / Enter] 잠금/해제  [M / Tab] 메뉴 창  [Esc] 종료" << flush;
 
@@ -453,8 +442,8 @@ void seat_arrangement(int row, int column, int people) {
     setWindowAndBuffer(cols, rows, bufW, bufH);
 
     //short ox, oy; get_cursor_1based(&ox, &oy);
-    draw_check02(left, top+2, column, row);
-    Grid g{ row, column, left, top+2 };
+    draw_check02(left, top + 2, column, row);
+    Grid g{ row, column, left, top + 2 };
 
     drawAxesLabels(g, row, column);
 
@@ -502,7 +491,7 @@ void seat_arrangement(int row, int column, int people) {
 
             const int menuLeft = 5;
 
-            SeatAction act = showBottomMenu(menuLeft, menuTopY+2);
+            SeatAction act = showBottomMenu(menuLeft, menuTopY + 2);
             if (act == SeatAction::None) continue;
             if (act == SeatAction::Reroll) {
                 rerollSeats(seats, selected);
@@ -576,5 +565,5 @@ void seat_arrangement(int row, int column, int people) {
             if (act == SeatAction::Back) break;
         }
     }
-    
+
 }
