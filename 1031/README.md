@@ -1,6 +1,6 @@
 # 9주차 수업내용
 
-- 웹 게임 개발 팀 선정
+- 웹 게임 개발 팀 선정 및 개발
 
 ## 개발한 게임
 [레퍼지토리 이동](https://github.com/GUBBIB/WebGameMakers)
